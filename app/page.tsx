@@ -12,7 +12,11 @@ export default function Home() {
   const [messages, setMessages] = useState([
     { role: 'system', text: 'Hi there! 👋 Thanks for visiting my website. Feel free to ask me anything about programming, web development, or my experiences in tech.' }
   ]);
-  const chatEndRef = useRef(null);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // MANUALLY ADJUST SIZE HERE
+  const chatWidth = "280px";
+  const chatHeight = "450px";
 
   useEffect(() => {
     setMounted(true);
@@ -20,32 +24,24 @@ export default function Home() {
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, isChatOpen]);
 
-  const handleChat = async (e) => {
+  const handleChat = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
     const userMsg = input;
     setMessages([...messages, { role: 'user', text: userMsg }]);
     setInput('');
-    try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMsg }),
-      });
-      const data = await res.json();
-      setMessages(prev => [...prev, { role: 'system', text: data.reply || data.message || data.response }]);
-    } catch (err) {
-      setMessages(prev => [...prev, { role: 'system', text: 'ERROR: UPLINK_FAILED' }]);
-    }
+    
+    setTimeout(() => {
+      setMessages(prev => [...prev, { role: 'system', text: "UPLINK_STATUS: UI_DEMO_ACTIVE. Use the Gmail link in the sidebar for real inquiries." }]);
+    }, 1000);
   };
 
   return (
-    /* Change 1: Set max-height to screen and hide overflow to control scrolling manually */
-    <main className="h-screen overflow-hidden bg-[#F8F9FA] p-6 md:p-12 w-full max-w-none text-[#212529] font-mono flex flex-col relative">
+    <main className="min-h-screen overflow-auto bg-[#F8F9FA] p-6 md:p-12 w-full max-w-none text-[#212529] font-mono flex flex-col relative">
       
-      {/* 1. STUDENT DOSSIER HEADER - Stays pinned at the top */}
+      {/* 1. STUDENT DOSSIER HEADER */}
       <header className="border-b-4 border-black pb-8 mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 text-black shrink-0">
         <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
           <div className="group relative w-40 h-40 border-4 border-black bg-[#FF7F50] shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex-shrink-0 cursor-crosshair overflow-hidden">
@@ -61,7 +57,6 @@ export default function Home() {
               fill
               className="object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100"
             />
-            <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-10 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%] transition-opacity duration-500"></div>
           </div>
 
           <div className="flex flex-col gap-2 text-black">
@@ -83,71 +78,74 @@ export default function Home() {
         </div>
       </header>
 
-      {/* 2. MAIN DASHBOARD CONTENT - Flex container to handle scrolling */}
-      <div className="flex-grow flex overflow-hidden gap-12 text-black">
+      {/* 2. MAIN DASHBOARD CONTENT */}
+      <div className="flex-grow flex overflow-hidden gap-12 text-black relative">
         
-        {/* LEFT COLUMN: SIDEBAR - Stays pinned */}
-        <div className="hidden lg:flex lg:w-1/4 flex-col gap-8 overflow-y-auto pr-4 custom-scrollbar">
-          <section>
-            <h3 className="text-xs font-black uppercase mb-4 bg-gray-200 inline-block px-2 border border-black italic">Subject_Bio</h3>
-            <p className="text-sm leading-relaxed border-l-4 border-black pl-4 py-2 bg-white italic shadow-sm">
-              "Computer Science student at National University specializing in Machine Learning and data-driven analysis."
-            </p>
-          </section>
-
-          <section>
-            <h3 className="text-xs font-black uppercase mb-4 bg-gray-200 inline-block px-2 border border-black italic text-black">Social_Connect // Links</h3>
-            <div className="border-2 border-black p-4 bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col gap-3">
-              <a href="https://github.com/vallefasli" target="_blank" className="flex items-center justify-between border border-black p-2 hover:bg-black hover:text-white transition-all group">
-                <span className="text-[10px] font-black uppercase tracking-widest">GitHub</span>
-                <img src="https://img.shields.io/badge/-000?style=flat&logo=github&logoColor=white" alt="GH" className="h-4 invert group-hover:invert-0" />
-              </a>
-              <a href="https://www.linkedin.com/in/lorenzo-miguel-vallefas-829a9b393/" target="_blank" className="flex items-center justify-between border border-black p-2 hover:bg-black hover:text-white transition-all group">
-                <span className="text-[10px] font-black uppercase tracking-widest">LinkedIn</span>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" className="h-5 w-5 grayscale invert group-hover:invert-0" />
-              </a>
-              <a href="https://www.instagram.com/vllfsmigs_/" target="_blank" className="flex items-center justify-between border border-black p-2 hover:bg-black hover:text-white transition-all group">
-                <span className="text-[10px] font-black uppercase tracking-widest">Instagram</span>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="IG" className="h-5 w-5 grayscale invert group-hover:invert-0" />
-              </a>
-              <a href="https://mail.google.com/mail/?view=cm&fs=1&to=vallefasli@gmail.com" target="_blank" className="flex items-center justify-between border border-black p-2 hover:bg-black hover:text-white transition-all group">
-                <span className="text-[10px] font-black uppercase tracking-widest">Gmail_Direct</span>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" alt="Gmail" className="h-4 w-5 grayscale invert group-hover:invert-0" />
-              </a>
+        {/* LEFT COLUMN: SIDEBAR */}
+        <div className="hidden lg:flex lg:w-1/4 flex-col overflow-y-auto pr-4 custom-scrollbar">
+          <section className="space-y-8">
+            {/* Bio */}
+            <div>
+              <h3 className="text-xs font-black uppercase mb-4 bg-gray-200 inline-block px-2 border border-black italic">Subject_Bio</h3>
+              <p className="text-sm leading-relaxed border-l-4 border-black pl-4 py-2 bg-white italic shadow-sm">
+                "Computer Science student at National University specializing in Machine Learning and data-driven analysis."
+              </p>
             </div>
-          </section>
-
-          <section>
-            <h3 className="text-xs font-black uppercase mb-4 bg-gray-200 inline-block px-2 border border-black italic text-black">Activity_Log // Heatmap</h3>
-            <div className="border-2 border-black p-4 bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-hidden text-black min-h-[150px] flex items-center justify-center">
-              {mounted ? (
-                <GitHubCalendar username="vallefasli" blockSize={10} blockMargin={4} fontSize={10} theme={{ light: ['#f0f0f0', '#cccccc', '#999999', '#666666', '#000000'] }} colorScheme="light" />
-              ) : (
-                <p className="text-[8px] uppercase animate-pulse">Synchronizing Activity...</p>
-              )}
+            {/* Socials */}
+            <div>
+              <h3 className="text-xs font-black uppercase mb-4 bg-gray-200 inline-block px-2 border border-black italic text-black">Social_Connect // Links</h3>
+              <div className="border-2 border-black p-4 bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col gap-3">
+                <a href="https://github.com/vallefasli" target="_blank" className="flex items-center justify-between border border-black p-2 hover:bg-black hover:text-white transition-all group">
+                  <span className="text-[10px] font-black uppercase tracking-widest">GitHub</span>
+                  <img src="https://img.shields.io/badge/-000?style=flat&logo=github&logoColor=white" alt="GH" className="h-4 invert group-hover:invert-0 shrink-0" />
+                </a>
+                <a href="https://www.linkedin.com/in/lorenzo-miguel-vallefas-829a9b393/" target="_blank" className="flex items-center justify-between border border-black p-2 hover:bg-black hover:text-white transition-all group">
+                  <span className="text-[10px] font-black uppercase tracking-widest">LinkedIn</span>
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" className="h-5 w-5 grayscale invert group-hover:invert-0 shrink-0" />
+                </a>
+                <a href="https://www.instagram.com/vllfsmigs_/" target="_blank" className="flex items-center justify-between border border-black p-2 hover:bg-black hover:text-white transition-all group">
+                  <span className="text-[10px] font-black uppercase tracking-widest">Instagram</span>
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="IG" className="h-5 w-5 grayscale invert group-hover:invert-0 shrink-0" />
+                </a>
+                <a href="mailto:vallefasli@gmail.com" target="_blank" className="flex items-center justify-between border border-black p-2 hover:bg-black hover:text-white transition-all group">
+                  <span className="text-[10px] font-black uppercase tracking-widest">Gmail_Direct</span>
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" alt="Gmail" className="h-4 w-5 grayscale invert group-hover:invert-0 shrink-0" />
+                </a>
+              </div>
             </div>
-          </section>
-
-          <section>
-            <h3 className="text-xs font-black uppercase mb-4 bg-gray-200 inline-block px-2 border border-black italic">Tech_Arsenal</h3>
-            <div className="space-y-4">
-              {[
-                { label: "Analytical_Stack", tools: "Python, SQL" },
-                { label: "Data_Processing", tools: "Pandas, NumPy" },
-                { label: "Predictive_Modeling", tools: "Supervised Learning" },
-                { label: "Vision_Surface", tools: "OpenCV, MediaPipe" }
-              ].map((item) => (
-                <div key={item.label} className="border border-black p-3 bg-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
-                  <p className="text-[9px] font-bold text-gray-400 uppercase">{item.label}</p>
-                  <p className="text-xs font-black uppercase">{item.tools}</p>
-                </div>
-              ))}
+            {/* Activity Log */}
+            <div>
+              <h3 className="text-xs font-black uppercase mb-4 bg-gray-200 inline-block px-2 border border-black italic text-black">Activity_Log // Heatmap</h3>
+              <div className="border-2 border-black p-4 bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-hidden text-black min-h-[150px] flex items-center justify-center">
+                {mounted ? (
+                  <GitHubCalendar username="vallefasli" blockSize={10} blockMargin={4} fontSize={10} theme={{ light: ['#f0f0f0', '#cccccc', '#999999', '#666666', '#000000'] }} />
+                ) : (
+                  <p className="text-[8px] uppercase animate-pulse">Synchronizing Activity...</p>
+                )}
+              </div>
+            </div>
+            {/* Tech Stack */}
+            <div>
+              <h3 className="text-xs font-black uppercase mb-4 bg-gray-200 inline-block px-2 border border-black italic">Tech_Arsenal</h3>
+              <div className="space-y-4">
+                {[
+                  { label: "Analytical_Stack", tools: "Python, SQL" },
+                  { label: "Data_Processing", tools: "Pandas, NumPy" },
+                  { label: "Predictive_Modeling", tools: "Supervised Learning" },
+                  { label: "Vision_Surface", tools: "OpenCV, MediaPipe" }
+                ].map((item) => (
+                  <div key={item.label} className="border border-black p-3 bg-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                    <p className="text-[9px] font-bold text-gray-400 uppercase">{item.label}</p>
+                    <p className="text-xs font-black uppercase">{item.tools}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </section>
         </div>
 
-        {/* RIGHT COLUMN: PROJECT CARDS - ONLY THIS SCROLLS */}
-        <div className="flex-grow lg:w-3/4 overflow-y-auto pr-2 custom-scrollbar pb-10">
+        {/* RIGHT COLUMN: PROJECT CARDS */}
+        <div className="flex-grow lg:w-3/4 h-full overflow-y-auto pr-2 custom-scrollbar pb-10">
           <div className="flex items-center gap-4 mb-8">
             <h3 className="text-xs font-black uppercase bg-black text-white px-4 py-1 italic tracking-widest sticky top-0 z-10">Personal Projects</h3>
             <div className="h-[2px] bg-black flex-grow opacity-20"></div>
@@ -208,32 +206,44 @@ export default function Home() {
         </div>
       </div>
 
-      {/* --- NEW MODERN FLOATING CHAT INTERFACE --- */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end font-sans">
+      {/* FOOTER */}
+      <footer className="shrink-0 pt-6 border-t-4 border-black flex flex-col md:flex-row justify-between items-center text-[10px] font-black uppercase tracking-[0.4em] text-gray-400">
+        <p>DO NOT REPLICATE // FOR PROFESSIONAL_AUDIT ONLY</p>
+        <p>© 2026 LOREN // NU_CS_DATABASE</p>
+      </footer>
+
+      {/* --- THE ABSOLUTE FIX --- */}
+      {/* This container is FIXED to the viewport. It will NOT affect anything inside the <main> flex flow. */}
+      <div className="fixed bottom-6 right-6 z-[100] flex flex-col items-end">
         {isChatOpen && (
-          <div className="mb-4 w-80 md:w-[380px] bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden flex flex-col animate-in slide-in-from-bottom-5">
-            {/* Header matches reference image style */}
-            <div className="p-4 border-b flex justify-between items-center bg-white">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gray-200 relative overflow-hidden">
-                  <Image src="/profile1.png" alt="Bryl" fill className="object-cover" />
+          <div
+            style={{ width: chatWidth, height: chatHeight, maxHeight: '90vh', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', position: 'fixed', zIndex: 110 }}
+            className="bg-white rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.25)] border-2 border-black overflow-hidden flex flex-col pointer-events-auto"
+          >
+            {/* Chat Header */}
+            <div className="p-3 bg-white/20 border-b border-black/5 flex justify-between items-center shrink-0">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-gray-200 relative overflow-hidden border border-black/5">
+                  <Image src="/profile1.png" alt="Miguel" fill className="object-cover" />
                 </div>
-                <div>
-                  <h3 className="font-bold text-sm text-gray-800">Chat with Bryl</h3>
-                  <p className="text-[10px] text-green-500 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Online
-                  </p>
+                <div className="font-sans">
+                  <h3 className="font-bold text-xs text-black leading-none">Miguel V.</h3>
+                  <p className="text-[9px] text-green-600 font-bold uppercase mt-1">Active Now</p>
                 </div>
               </div>
-              <button onClick={() => setIsChatOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+              <button onClick={() => setIsChatOpen(false)} className="text-black/40 hover:text-black transition-colors">
+                ✕
               </button>
             </div>
 
-            <div className="h-80 overflow-y-auto p-4 space-y-4 bg-white">
+            {/* Messages */}
+            <div
+              className="flex-1 p-4 space-y-4 font-sans custom-scrollbar"
+              style={{ overflowY: 'auto', maxHeight: `calc(${chatHeight} - 110px)` }}
+            >
               {messages.map((m, i) => (
                 <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[85%] p-3 rounded-2xl text-sm ${m.role === 'user' ? 'bg-black text-white rounded-tr-none' : 'bg-gray-100 text-gray-800 rounded-tl-none'}`}>
+                  <div className={`max-w-[85%] p-2.5 rounded-2xl text-[11px] shadow-sm ${m.role === 'user' ? 'bg-[#0084ff] text-white rounded-tr-none' : 'bg-white text-black rounded-tl-none border border-black/5'}`}>
                     {m.text}
                   </div>
                 </div>
@@ -241,40 +251,31 @@ export default function Home() {
               <div ref={chatEndRef} />
             </div>
 
-            <form onSubmit={handleChat} className="p-4 border-t bg-white">
-              <div className="relative flex items-center">
+            {/* Input */}
+            <form onSubmit={handleChat} className="p-3 border-t border-black/5 pointer-events-auto">
+              <div className="flex items-center gap-2">
                 <input 
                   type="text" 
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="Type a message..." 
-                  className="w-full pl-4 pr-12 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-black"
+                  placeholder="Aa" 
+                  className="flex-grow bg-black/5 rounded-full px-4 py-2 text-[11px] focus:outline-none font-sans"
                 />
-                <button type="submit" className="absolute right-2 p-1.5 bg-gray-400 text-white rounded-md hover:bg-black transition-colors">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                <button type="submit" className="text-[#0084ff]">
+                  <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" /></svg>
                 </button>
               </div>
             </form>
           </div>
         )}
 
-        {/* FLOATING ACTION BUTTON - Matches reference image style */}
         <button 
           onClick={() => setIsChatOpen(!isChatOpen)}
-          className="bg-[#111] hover:bg-black text-white px-4 py-2.5 rounded-md flex items-center gap-2.5 shadow-lg active:scale-95 transition-all group"
+          className="bg-[#0084ff] text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center hover:scale-105 transition-all text-2xl pointer-events-auto fixed bottom-6 right-6 z-[120]"
         >
-          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-          </svg>
-          <span className="font-bold text-sm tracking-tight">Chat with Bryl</span>
+          {isChatOpen ? "✕" : "💬"}
         </button>
       </div>
-
-      {/* FOOTER - Shrink-0 keeps it at the very bottom of the viewport */}
-      <footer className="shrink-0 pt-6 border-t-4 border-black flex flex-col md:flex-row justify-between items-center text-[10px] font-black uppercase tracking-[0.4em] text-gray-400">
-        <p>DO NOT REPLICATE // FOR PROFESSIONAL_AUDIT ONLY</p>
-        <p>© 2026 LOREN // NU_CS_DATABASE // 0x87AF61</p>
-      </footer>
     </main>
   );
 }
