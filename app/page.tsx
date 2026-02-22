@@ -1,6 +1,10 @@
+'use client';
+
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+// Fixed: Named import used for GitHubCalendar
+import { GitHubCalendar } from 'react-github-calendar';
 
 export default function Home() {
   return (
@@ -10,9 +14,8 @@ export default function Home() {
       <header className="border-b-4 border-black pb-8 mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 text-black">
         <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
           
-          {/* PHOTO CONTAINER WITH HOVER SWAP */}
-          <div className="group relative w-40 h-40 border-4 border-black bg-gray-200 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex-shrink-0 cursor-crosshair overflow-hidden">
-            {/* PRIMARY IMAGE: Grayscale by default, fades out on hover */}
+          {/* PHOTO CONTAINER WITH HOVER SWAP AND COZY CORAL COLOR */}
+          <div className="group relative w-40 h-40 border-4 border-black bg-[#FF7F50] shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex-shrink-0 cursor-crosshair overflow-hidden">
             <Image 
               src="/profile1.png" 
               alt="Miguel I. Vallefas"
@@ -20,7 +23,6 @@ export default function Home() {
               className="object-cover grayscale transition-all duration-500 opacity-100 group-hover:opacity-0 group-hover:grayscale-0"
             />
 
-            {/* SECONDARY IMAGE: Fades in on hover */}
             <Image 
               src="/profile-hover.jpg" 
               alt="Miguel I. Vallefas Alternate"
@@ -28,7 +30,6 @@ export default function Home() {
               className="object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100"
             />
             
-            {/* SCANLINE OVERLAY */}
             <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-10 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%] transition-opacity duration-500"></div>
           </div>
 
@@ -63,6 +64,46 @@ export default function Home() {
             </p>
           </section>
 
+          {/* GITHUB ACTIVITY AUDIT */}
+          <section>
+            <h3 className="text-xs font-black uppercase mb-4 bg-gray-200 inline-block px-2 border border-black italic">GitHub_Activity_Audit</h3>
+            <div className="border-2 border-black p-2 bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] space-y-2">
+              <img 
+                src="https://github-readme-stats.vercel.app/api?username=vallefasli&show_icons=true&theme=transparent&hide_border=true&title_color=000&text_color=000&icon_color=000" 
+                alt="GitHub Stats"
+                className="w-full grayscale transition-all hover:grayscale-0"
+              />
+              <img 
+                src="https://github-readme-stats.vercel.app/api/top-langs/?username=vallefasli&layout=compact&theme=transparent&hide_border=true&title_color=000&text_color=000" 
+                alt="Top Languages"
+                className="w-full grayscale transition-all hover:grayscale-0"
+              />
+            </div>
+          </section>
+
+          {/* COMMIT HEATMAP */}
+          <section>
+            <h3 className="text-xs font-black uppercase mb-4 bg-gray-200 inline-block px-2 border border-black italic text-black">
+              Commit_Heatmap // Activity_Log
+            </h3>
+            <div className="border-2 border-black p-4 bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col items-center overflow-hidden">
+              <GitHubCalendar 
+                username="vallefasli" 
+                blockSize={10}
+                blockMargin={4}
+                fontSize={10}
+                theme={{
+                  light: ['#f0f0f0', '#cccccc', '#999999', '#666666', '#000000'],
+                }}
+                colorScheme="light"
+              />
+              <div className="w-full mt-4 pt-2 border-t border-dotted border-black flex justify-between items-center text-[7px] font-black uppercase text-gray-400 tracking-widest">
+                <span>[ Data_Sync: Active ]</span>
+                <span>User: vallefasli</span>
+              </div>
+            </div>
+          </section>
+
           <section>
             <h3 className="text-xs font-black uppercase mb-4 bg-gray-200 inline-block px-2 border border-black italic">Tech_Arsenal</h3>
             <div className="space-y-4">
@@ -80,36 +121,17 @@ export default function Home() {
               ))}
             </div>
           </section>
-
-          <section>
-            <h3 className="text-xs font-black uppercase mb-4 bg-gray-200 inline-block px-2 border border-black italic">Academic_Record</h3>
-            <div className="text-xs font-bold border-2 border-black p-4 bg-white space-y-4 shadow-sm">
-              <div>
-                <p className="uppercase">National University Dasma</p>
-                <p className="text-gray-500 italic text-[10px]">BS Computer Science</p>
-              </div>
-              <div className="border-t border-dotted border-black pt-2">
-                <p className="uppercase">Mater Dei Academy Tagaytay</p>
-                <p className="text-gray-500 italic text-[10px]">Senior/Junior High School</p>
-              </div>
-              <div className="border-t border-dotted border-black pt-2">
-                <p className="uppercase">Salaban Elementary School</p>
-                <p className="text-gray-500 italic text-[10px]">Grade School Graduate</p>
-              </div>
-            </div>
-          </section>
         </div>
 
         {/* RIGHT COLUMN: PROJECT CARDS */}
-        <div className="lg:col-span-3 space-y-8">
+        <div className="lg:col-span-3 space-y-8 text-black">
           <div className="flex items-center gap-4 mb-4">
             <h3 className="text-xs font-black uppercase bg-black text-white px-4 py-1 italic tracking-widest">Personal Projects</h3>
             <div className="h-[2px] bg-black flex-grow opacity-20"></div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-            {/* FILE-001 */}
-            <Link href="/project/FILE-001" className="group block">
+            <Link href="/project/FILE-001" className="group block text-black">
               <div className="border-2 border-black p-6 bg-white shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] group-hover:shadow-none group-hover:translate-x-1 group-hover:translate-y-1 transition-all h-full flex flex-col">
                 <div className="flex justify-between border-b-2 border-black pb-2 mb-4">
                   <span className="text-[10px] font-black italic text-gray-400">ID: FILE-001</span>
@@ -126,8 +148,7 @@ export default function Home() {
               </div>
             </Link>
 
-            {/* FILE-002 */}
-            <Link href="/project/FILE-002" className="group block">
+            <Link href="/project/FILE-002" className="group block text-black">
               <div className="border-2 border-black p-6 bg-white shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] group-hover:shadow-none group-hover:translate-x-1 group-hover:translate-y-1 transition-all h-full flex flex-col">
                 <div className="flex justify-between border-b-2 border-black pb-2 mb-4">
                   <span className="text-[10px] font-black italic text-gray-400">ID: FILE-002</span>
@@ -144,8 +165,7 @@ export default function Home() {
               </div>
             </Link>
 
-            {/* FILE-003 */}
-            <Link href="/project/FILE-003" className="group block">
+            <Link href="/project/FILE-003" className="group block text-black">
               <div className="border-2 border-black p-6 bg-white shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] group-hover:shadow-none group-hover:translate-x-1 group-hover:translate-y-1 transition-all h-full flex flex-col">
                 <div className="flex justify-between border-b-2 border-black pb-2 mb-4">
                   <span className="text-[10px] font-black italic text-gray-400">ID: FILE-003</span>
