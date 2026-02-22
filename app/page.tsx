@@ -1,21 +1,27 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { GitHubCalendar } from 'react-github-calendar';
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(false); // New state for chatbot
-  const [input, setInput] = useState(''); // New state for input
-  const [messages, setMessages] = useState([{ role: 'system', text: 'SYSTEM: Connection established.' }]); // Message history
+  const [isChatOpen, setIsChatOpen] = useState(false); 
+  const [input, setInput] = useState(''); 
+  const [messages, setMessages] = useState([
+    { role: 'system', text: 'Hi there! 👋 Thanks for visiting my website. Feel free to ask me anything about programming, web development, or my experiences in tech.' }
+  ]);
+  const chatEndRef = useRef(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // New function for Vercel API
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
   const handleChat = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
@@ -29,7 +35,7 @@ export default function Home() {
         body: JSON.stringify({ message: userMsg }),
       });
       const data = await res.json();
-      setMessages(prev => [...prev, { role: 'system', text: data.reply || data.message }]);
+      setMessages(prev => [...prev, { role: 'system', text: data.reply || data.message || data.response }]);
     } catch (err) {
       setMessages(prev => [...prev, { role: 'system', text: 'ERROR: UPLINK_FAILED' }]);
     }
@@ -202,37 +208,65 @@ export default function Home() {
         </div>
       </div>
 
-      {/* CHATBOT INTEGRATION - Layered on top */}
-      <div className="fixed bottom-8 right-8 z-50 flex flex-col items-end">
+      {/* --- NEW MODERN FLOATING CHAT INTERFACE --- */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end font-sans">
         {isChatOpen && (
-          <div className="mb-4 w-80 h-96 bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col overflow-hidden">
-            <div className="bg-black text-white p-3 flex justify-between items-center shrink-0">
-              <span className="text-[10px] font-black uppercase italic tracking-widest">Neural_Interface</span>
-              <button onClick={() => setIsChatOpen(false)}>✕</button>
+          <div className="mb-4 w-80 md:w-[380px] bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden flex flex-col animate-in slide-in-from-bottom-5">
+            {/* Header matches reference image style */}
+            <div className="p-4 border-b flex justify-between items-center bg-white">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gray-200 relative overflow-hidden">
+                  <Image src="/profile1.png" alt="Bryl" fill className="object-cover" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm text-gray-800">Chat with Bryl</h3>
+                  <p className="text-[10px] text-green-500 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Online
+                  </p>
+                </div>
+              </div>
+              <button onClick={() => setIsChatOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
             </div>
-            <div className="flex-grow p-4 overflow-y-auto bg-[#F8F9FA] space-y-4">
+
+            <div className="h-80 overflow-y-auto p-4 space-y-4 bg-white">
               {messages.map((m, i) => (
-                <div key={i} className={`p-2 border border-black text-[10px] uppercase font-bold ${m.role === 'user' ? 'bg-black text-white self-end' : 'bg-gray-200'}`}>
-                  {m.text}
+                <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-[85%] p-3 rounded-2xl text-sm ${m.role === 'user' ? 'bg-black text-white rounded-tr-none' : 'bg-gray-100 text-gray-800 rounded-tl-none'}`}>
+                    {m.text}
+                  </div>
                 </div>
               ))}
+              <div ref={chatEndRef} />
             </div>
-            <form onSubmit={handleChat} className="p-2 border-t-2 border-black bg-white">
-              <input 
-                type="text" 
-                value={input} 
-                onChange={(e) => setInput(e.target.value)} 
-                className="w-full text-[10px] uppercase font-bold outline-none" 
-                placeholder="Type command..." 
-              />
+
+            <form onSubmit={handleChat} className="p-4 border-t bg-white">
+              <div className="relative flex items-center">
+                <input 
+                  type="text" 
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Type a message..." 
+                  className="w-full pl-4 pr-12 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-black"
+                />
+                <button type="submit" className="absolute right-2 p-1.5 bg-gray-400 text-white rounded-md hover:bg-black transition-colors">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                </button>
+              </div>
             </form>
           </div>
         )}
+
+        {/* FLOATING ACTION BUTTON - Matches reference image style */}
         <button 
           onClick={() => setIsChatOpen(!isChatOpen)}
-          className="bg-[#FFD700] border-4 border-black p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] font-black text-xs uppercase italic"
+          className="bg-[#111] hover:bg-black text-white px-4 py-2.5 rounded-md flex items-center gap-2.5 shadow-lg active:scale-95 transition-all group"
         >
-          {isChatOpen ? 'Close_Session' : 'Initialize_Chat'}
+          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+          </svg>
+          <span className="font-bold text-sm tracking-tight">Chat with Bryl</span>
         </button>
       </div>
 
