@@ -9,8 +9,9 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false); 
   const [input, setInput] = useState(''); 
+  const [isTyping, setIsTyping] = useState(false); // New: Typing state
   const [messages, setMessages] = useState([
-    { role: 'system', text: 'Hi there! 👋 Thanks for visiting my website. Feel free to ask me anything about programming, web development, or my experiences in tech.' }
+    { role: 'model', text: 'Hi there! 👋 Thanks for visiting my website. Feel free to ask me anything about programming, web development, or my experiences in tech.' }
   ]);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -24,18 +25,46 @@ export default function Home() {
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isChatOpen]);
+  }, [messages, isChatOpen, isTyping]); // Added isTyping to trigger scroll
 
   const handleChat = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
+
     const userMsg = input;
-    setMessages([...messages, { role: 'user', text: userMsg }]);
+    // Add user message to UI immediately
+    setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
     setInput('');
-    
-    setTimeout(() => {
-      setMessages(prev => [...prev, { role: 'system', text: "UPLINK_STATUS: UI_DEMO_ACTIVE. Use the Gmail link in the sidebar for real inquiries." }]);
-    }, 1000);
+    setIsTyping(true); // Start typing effect
+
+    try {
+      // Prepare history for Gemini API
+      const history = messages.map(m => ({
+        role: m.role === 'user' ? 'user' : 'model',
+        parts: [{ text: m.text }],
+      }));
+
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: userMsg, history }),
+      });
+
+      const data = await response.json();
+      setIsTyping(false); // Stop typing effect
+
+      if (data.text) {
+        setMessages(prev => [...prev, { role: 'model', text: data.text }]);
+      } else {
+        throw new Error("No response from API");
+      }
+    } catch (err) {
+      setIsTyping(false); // Stop typing effect on error
+      setMessages(prev => [...prev, { 
+        role: 'model', 
+        text: "Sorry, I'm having trouble connecting to my database. Please use the Gmail link in the sidebar for real inquiries!" 
+      }]);
+    }
   };
 
   return (
@@ -212,26 +241,30 @@ export default function Home() {
         <p>© 2026 LOREN // NU_CS_DATABASE</p>
       </footer>
 
-      {/* --- THE ABSOLUTE FIX --- */}
-      {/* This container is FIXED to the viewport. It will NOT affect anything inside the <main> flex flow. */}
+      {/* CHAT INTERFACE - POSITIONED BOTTOM RIGHT */}
       <div className="fixed bottom-6 right-6 z-[100] flex flex-col items-end">
         {isChatOpen && (
           <div
-            style={{ width: chatWidth, height: chatHeight, maxHeight: '90vh', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', position: 'fixed', zIndex: 110 }}
-            className="bg-white rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.25)] border-2 border-black overflow-hidden flex flex-col pointer-events-auto"
+            style={{ 
+              width: chatWidth, 
+              height: chatHeight, 
+              maxHeight: '80vh',
+              zIndex: 110 
+            }}
+            className="bg-white rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.25)] border-2 border-black overflow-hidden flex flex-col pointer-events-auto mb-4"
           >
             {/* Chat Header */}
-            <div className="p-3 bg-white/20 border-b border-black/5 flex justify-between items-center shrink-0">
+            <div className="p-3 bg-white border-b border-black/5 flex justify-between items-center shrink-0">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-gray-200 relative overflow-hidden border border-black/5">
                   <Image src="/profile1.png" alt="Miguel" fill className="object-cover" />
                 </div>
-                <div className="font-sans">
+                <div className="font-sans text-left">
                   <h3 className="font-bold text-xs text-black leading-none">Miguel V.</h3>
                   <p className="text-[9px] text-green-600 font-bold uppercase mt-1">Active Now</p>
                 </div>
               </div>
-              <button onClick={() => setIsChatOpen(false)} className="text-black/40 hover:text-black transition-colors">
+              <button onClick={() => setIsChatOpen(false)} className="text-black/40 hover:text-black transition-colors px-2">
                 ✕
               </button>
             </div>
@@ -239,29 +272,41 @@ export default function Home() {
             {/* Messages */}
             <div
               className="flex-1 p-4 space-y-4 font-sans custom-scrollbar"
-              style={{ overflowY: 'auto', maxHeight: `calc(${chatHeight} - 110px)` }}
+              style={{ overflowY: 'auto' }}
             >
               {messages.map((m, i) => (
                 <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[85%] p-2.5 rounded-2xl text-[11px] shadow-sm ${m.role === 'user' ? 'bg-[#0084ff] text-white rounded-tr-none' : 'bg-white text-black rounded-tl-none border border-black/5'}`}>
+                  <div className={`max-w-[85%] p-2.5 rounded-2xl text-[11px] shadow-sm text-left ${m.role === 'user' ? 'bg-[#0084ff] text-white rounded-tr-none' : 'bg-gray-100 text-black rounded-tl-none border border-black/5'}`}>
                     {m.text}
                   </div>
                 </div>
               ))}
+              
+              {/* Animated Typing Indicator */}
+              {isTyping && (
+                <div className="flex justify-start">
+                  <div className="bg-gray-100 text-black p-2.5 rounded-2xl rounded-tl-none border border-black/5 flex gap-1 items-center shadow-sm">
+                    <span className="w-1 h-1 bg-gray-400 rounded-full animate-bounce"></span>
+                    <span className="w-1 h-1 bg-gray-400 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                    <span className="w-1 h-1 bg-gray-400 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                  </div>
+                </div>
+              )}
+              
               <div ref={chatEndRef} />
             </div>
 
             {/* Input */}
-            <form onSubmit={handleChat} className="p-3 border-t border-black/5 pointer-events-auto">
+            <form onSubmit={handleChat} className="p-3 border-t border-black/5 pointer-events-auto bg-white">
               <div className="flex items-center gap-2">
                 <input 
                   type="text" 
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Aa" 
-                  className="flex-grow bg-black/5 rounded-full px-4 py-2 text-[11px] focus:outline-none font-sans"
+                  className="flex-grow bg-black/5 rounded-full px-4 py-2 text-[11px] focus:outline-none font-sans text-black"
                 />
-                <button type="submit" className="text-[#0084ff]">
+                <button type="submit" className="text-[#0084ff] hover:scale-110 transition-transform">
                   <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" /></svg>
                 </button>
               </div>
@@ -269,9 +314,10 @@ export default function Home() {
           </div>
         )}
 
+        {/* Toggle Button */}
         <button 
           onClick={() => setIsChatOpen(!isChatOpen)}
-          className="bg-[#0084ff] text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center hover:scale-105 transition-all text-2xl pointer-events-auto fixed bottom-6 right-6 z-[120]"
+          className="bg-[#0084ff] text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center hover:scale-105 transition-all text-2xl pointer-events-auto relative z-[120]"
         >
           {isChatOpen ? "✕" : "💬"}
         </button>
