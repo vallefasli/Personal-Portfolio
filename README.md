@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Personal Portfolio: Student Dossier Edition
+
+A neo-brutalist, dossier-themed personal portfolio built with a modern web stack and an integrated AI persona. This project serves as a professional "database" and interactive hub for showcasing technical projects and academic progress.
+
+## Core Features
+* **Interactive AI Chatbot**: A custom-tuned interface powered by the Gemini API that allows visitors to engage with an AI representation of the developer.
+* **Project Dashboard**: A grid-based showcase featuring experimental and verified technical projects with status indicators.
+* **Real-time Activity Log**: Integrated GitHub contribution heatmap for tracking development consistency.
+* **Thematic UI**: A high-contrast, "Student Dossier" aesthetic focusing on technical audit logs and database-style layouts.
+
+## Technical Stack
+* **Framework**: Next.js (App Router)
+* **Frontend**: React and Tailwind CSS
+* **Language**: TypeScript
+* **AI Integration**: Google Generative AI SDK
+* **Data Visualization**: React GitHub Calendar
 
 ## Getting Started
 
-First, run the development server:
+1. **Install Dependencies**:
+   ```bash
+   npm install
+Environment Configuration:
+Create a .env file and add your API credentials:
 
-```bash
+Code snippet
+NEXT_PUBLIC_GEMINI_API_KEY=your_api_key_here
+Run Development Server:
+
+Bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Build for Production:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Bash
+npm run build
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### About Content
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Subject Profile: [Name]
 
-## Learn More
+### Professional Summary
+A dedicated Computer Science student specializing in Machine Learning and data-driven analysis. Focused on building intelligent systems and exploring the intersections of software development and predictive modeling.
 
-To learn more about Next.js, take a look at the following resources:
+### Academic Background
+* **Education**: Currently pursuing a degree in Computer Science at [University Name].
+* **Focus Areas**: Machine Learning, Natural Language Processing, and Computer Vision.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Technical Arsenal
+* **Languages & Tools**: Python, SQL, and Kotlin.
+* **Data Science**: Pandas, NumPy, Matplotlib, and Seaborn.
+* **Machine Learning**: Experience with supervised learning models and NLP frameworks.
+* **Computer Vision**: Proficient in using OpenCV and MediaPipe for real-time recognition projects.
+* **Web Development**: Experience with Next.js, React, and modern CSS frameworks.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Interests & Goals
+* **Technical Interests**: Exploring AI-driven community platforms and automation tools.
+* **Personal Hobbies**: Enthusiast of specific animated series, strategic gaming, and building technical kits.
+* **Future Aspirations**: Aiming to contribute to the tech startup ecosystem and travel internationally while pursuing a career in Data Science.
