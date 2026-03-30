@@ -15,28 +15,8 @@ A neo-brutalist, dossier-themed personal portfolio built with a modern web stack
 * **AI Integration**: Google Generative AI SDK
 * **Data Visualization**: React GitHub Calendar
 
-## Getting Started
 
-1. **Install Dependencies**:
-   ```bash
-   npm install
-Environment Configuration:
-Create a .env file and add your API credentials:
-
-Code snippet
-NEXT_PUBLIC_GEMINI_API_KEY=your_api_key_here
-Run Development Server:
-
-Bash
-npm run dev
-Build for Production:
-
-Bash
-npm run build
-
-### About Content
-
-# Subject Profile: [Name]
+### Website Contents
 
 ### Professional Summary
 A dedicated Computer Science student specializing in Machine Learning and data-driven analysis. Focused on building intelligent systems and exploring the intersections of software development and predictive modeling.
